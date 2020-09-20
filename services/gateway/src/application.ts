@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import form from "./templates/form";
 import bodyParser from "body-parser";
 import scrape from "./scrape";
@@ -14,7 +14,7 @@ export function start({ PORT }: ConfigType) {
     res.send(form());
   });
 
-  app.post("/scrape", async (req, res) => {
+  app.post("/scrape", async (req, res, next) => {
     try {
       const { username, password } = req.body;
       if (!username || !password) {
@@ -23,14 +23,18 @@ export function start({ PORT }: ConfigType) {
       const { avatar, ...data } = await scrape(username, password);
       res.json({ status: "ok", ...data });
     } catch (e) {
-      console.error(e);
-      if (e instanceof HttpError) {
-        res.status(e.code);
-        res.json({ status: "error", error: e.code, message: e.message });
-      } else {
-        res.status(500);
-        res.json({ status: "error", error: 500 });
-      }
+      next(e);
+    }
+  });
+
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err);
+    if (err instanceof HttpError) {
+      res.status(err.code);
+      res.json({ status: "error", error: err.code, message: err.message });
+    } else {
+      res.status(500);
+      res.json({ status: "error", error: 500 });
     }
   });
 
