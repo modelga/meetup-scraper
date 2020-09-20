@@ -7,9 +7,21 @@ export type ConfigType = {
   PORT: number;
 };
 
+function translateError(code: number) {
+  switch (code) {
+    case 401:
+      return "invalid_login";
+    case 403:
+      return "session_expired";
+    default:
+      return "scrape_failed";
+  }
+}
+
 export function start({ PORT }: ConfigType) {
   const app = express();
   app.use(bodyParser.urlencoded());
+
   app.get("/", (_, res) => {
     res.send(form());
   });
@@ -32,10 +44,10 @@ export function start({ PORT }: ConfigType) {
     console.error(err);
     if (err instanceof HttpError) {
       res.status(err.code);
-      res.json({ status: "error", error: err.code, message: err.message });
+      res.json({ status: "error", error: translateError(err.code), message: err.message });
     } else {
       res.status(500);
-      res.json({ status: "error", error: 500 });
+      res.json({ status: "error", error: translateError(500) });
     }
   });
 
