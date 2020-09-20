@@ -1,9 +1,10 @@
 import puppeteer from "puppeteer";
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { LoginUserOnMeetup } from "./loginUserOnMeetup";
 import { SolveCaptcha } from "./solveCaptcha";
 import bodyParser from "body-parser";
 import Redis from "ioredis";
+import HttpError from "./HttpError";
 export type ConfigType = {
   HEADLESS: boolean;
   MEETUP_URL: string;
@@ -29,7 +30,7 @@ export const start = async (config: ConfigType) => {
   const app = express();
   app.use(bodyParser.json());
 
-  app.post("/", async (req, res) => {
+  app.post("/", async (req, res, next) => {
     try {
       const { username: email, password, hash } = req.body;
       const cachedCookies = await redis.get(hash);
@@ -41,8 +42,18 @@ export const start = async (config: ConfigType) => {
         res.send(cookies);
       }
     } catch (err) {
+      next(err);
+    }
+  });
+
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err);
+    if (err instanceof HttpError) {
+      res.status(err.code);
+      res.json({ status: "error", error: err.code, message: err.message });
+    } else {
       res.status(500);
-      res.send(err);
+      res.json({ status: "error", error: 500 });
     }
   });
 

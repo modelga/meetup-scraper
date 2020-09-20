@@ -1,6 +1,35 @@
 import puppeteer from "puppeteer";
 import { CaptchaSolver } from "./solveCaptcha";
 
+function isLoginFormDisabled(page: puppeteer.Page): Promise<boolean> {
+  return page.evaluate(() => {
+    const el = document.getElementById("loginFormSubmit") as HTMLInputElement | undefined;
+    if (el) {
+      return el.disabled;
+    } else {
+      return true;
+    }
+  });
+}
+
+async function solveCaptcha(page: puppeteer.Page, captchaSolver: CaptchaSolver) {
+  console.log("Login input is disabled. Need to solve captcha");
+  try {
+    await page.waitForSelector("div.g-recaptcha[data-sitekey]", { timeout: 5000 });
+    const siteKey = await page.evaluate(() => {
+      const el = document.querySelector("div.g-recaptcha[data-sitekey]") as HTMLElement;
+      return el.dataset.sitekey;
+    });
+    const data = await captchaSolver(siteKey, page.url());
+    await page.evaluate(`document.getElementById("g-recaptcha-response").innerHTML="${data}";`);
+    await page.evaluate(`document.getElementById("loginFormSubmit").disabled="";`);
+    console.log("Captcha solved");
+  } catch (e) {
+    console.error(e);
+    throw new Error(e);
+  }
+}
+
 export function LoginUserOnMeetup(browser: puppeteer.Browser, captchaSolver: CaptchaSolver) {
   return async (url: string, email: string, password: string) => {
     console.log("Logging to meetup");
@@ -19,31 +48,10 @@ export function LoginUserOnMeetup(browser: puppeteer.Browser, captchaSolver: Cap
       await page.type("#email", email);
       await page.type("#password", password);
 
-      const isLoginFormDisabled = await page.evaluate(() => {
-        const el = document.getElementById("loginFormSubmit") as HTMLInputElement | undefined;
-        if (el) {
-          return el.disabled;
-        } else {
-          return true;
-        }
-      });
-      if (isLoginFormDisabled) {
-        console.log("Login input is disabled. Need to solve captcha");
-        try {
-          await page.waitForSelector("div.g-recaptcha[data-sitekey]", { timeout: 5000 });
-          const siteKey = await page.evaluate(() => {
-            const el = document.querySelector("div.g-recaptcha[data-sitekey]") as HTMLElement;
-            return el.dataset.sitekey;
-          });
-          const data = await captchaSolver(siteKey, page.url());
-          await page.evaluate(`document.getElementById("g-recaptcha-response").innerHTML="${data}";`);
-          await page.evaluate(`document.getElementById("loginFormSubmit").disabled="";`);
-        } catch (e) {
-          console.error(e);
-          throw new Error(e);
-        }
+      if (await isLoginFormDisabled(page)) {
+        await solveCaptcha(page, captchaSolver);
       }
-      console.log("Captcha solved");
+
       await page.evaluate(`document.getElementById("loginFormSubmit").click();`);
       console.log("Logging in");
       try {
