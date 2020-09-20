@@ -1,6 +1,5 @@
 import { ConfigType, start } from "./application";
 const { PORT } = process.env;
-export const MEETUP_URL = "https://meetup.com";
 
 const config: ConfigType = {
   PORT: parseInt(PORT, 10) || 80,
