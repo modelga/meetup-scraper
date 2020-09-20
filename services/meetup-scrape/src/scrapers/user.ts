@@ -48,22 +48,18 @@ async function getDataFromSettingsPage(page: Page): Promise<[number, string]> {
   ]);
 }
 
-export function user(config: ConfigType): (page: Page, close: () => Promise<void>) => Promise<UserType> {
-  return async function (page, close) {
-    await page.goto(config.MEETUP_URL);
+export async function user(config: ConfigType, page: Page): Promise<UserType> {
+  await page.goto(config.MEETUP_URL);
 
-    await page.waitForSelector("#headerAvatar");
+  await page.waitForSelector("#headerAvatar");
 
-    const [full_name, member_since] = await getDataFromProfilePage(page);
-    const [meetup_user_id, email] = await getDataFromSettingsPage(page);
+  const [full_name, member_since] = await getDataFromProfilePage(page);
+  const [meetup_user_id, email] = await getDataFromSettingsPage(page);
 
-    await close();
-
-    return {
-      email: email,
-      meetup_user_id,
-      member_since,
-      full_name,
-    };
+  return {
+    email: email,
+    meetup_user_id,
+    member_since,
+    full_name,
   };
 }

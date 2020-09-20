@@ -44,12 +44,9 @@ async function getEvents(page: Page) {
   });
 }
 
-export function events(config: ConfigType): (page: Page, close: () => Promise<void>) => Promise<EventType[]> {
-  return async function (page, close) {
-    await page.goto(config.MEETUP_URL);
-    await page.waitForSelector("#headerAvatar");
-    const events = await getEvents(page);
-    await close();
-    return events.map(normalizeType);
-  };
+export async function events(config: ConfigType, page: Page): Promise<EventType[]> {
+  await page.goto(config.MEETUP_URL);
+  await page.waitForSelector("#headerAvatar");
+  const events = await getEvents(page);
+  return events.map(normalizeType);
 }

@@ -16,17 +16,14 @@ async function getGroups(page: Page): Promise<GroupType[]> {
   });
 }
 
-export function groups(config: ConfigType): (page: Page, close: () => Promise<void>) => Promise<GroupType[]> {
-  return async function (page, close) {
-    await page.goto(config.MEETUP_URL);
-    await page.waitForSelector("#headerAvatar");
-    await page.click("#simple-view-selector-group");
-    await page.waitFor(() => {
-      return [...document.querySelectorAll("h4")].find((el) => el.innerText.toLowerCase().includes("your groups"));
-    });
+export async function groups(config: ConfigType, page: Page): Promise<GroupType[]> {
+  await page.goto(config.MEETUP_URL);
+  await page.waitForSelector("#headerAvatar");
+  await page.click("#simple-view-selector-group");
+  await page.waitFor(() => {
+    return [...document.querySelectorAll("h4")].find((el) => el.innerText.toLowerCase().includes("your groups"));
+  });
 
-    const groups = await getGroups(page);
-    await close();
-    return groups;
-  };
+  const groups = await getGroups(page);
+  return groups;
 }

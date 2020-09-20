@@ -14,19 +14,16 @@ async function getAvatarUrl(page: Page): Promise<string> {
   });
 }
 
-export function avatar(config: ConfigType): (page: Page, close: () => Promise<void>) => Promise<AvatarType> {
-  return async function (page, close) {
-    await page.goto(config.MEETUP_URL);
-    await page.waitForSelector("#headerAvatar");
+export async function avatar(config: ConfigType, page: Page): Promise<AvatarType> {
+  await page.goto(config.MEETUP_URL);
+  await page.waitForSelector("#headerAvatar");
 
-    const avatarUrl = await getAvatarUrl(page);
-    const nav = page.waitForNavigation({ waitUntil: "networkidle2" });
-    const vs = await page.goto(avatarUrl);
-    await nav;
-    await close();
-    return {
-      data: (await vs.buffer()).toString("base64"),
-      type: vs.headers()["content-type"],
-    };
+  const avatarUrl = await getAvatarUrl(page);
+  const nav = page.waitForNavigation({ waitUntil: "networkidle2" });
+  const vs = await page.goto(avatarUrl);
+  await nav;
+  return {
+    data: (await vs.buffer()).toString("base64"),
+    type: vs.headers()["content-type"],
   };
 }
