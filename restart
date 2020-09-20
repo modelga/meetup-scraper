@@ -1,0 +1,3 @@
+#!/bin/sh
+
+./local.sh restart $1 && ./local.sh up -d && ./local.sh logs -f $1

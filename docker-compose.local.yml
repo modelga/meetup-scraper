@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  gateway:
+    volumes:
+      - ./services/gateway/src:/app/src
+    ports:
+      - 3000:80
+    command: npm run dev
+  meetup-login:
+    ports:
+      - 3001:80
+    volumes:
+      - ./services/meetup-login/src:/app/src
+    command: npm run dev
+  meetup-scrape:
+    ports:
+      - 3002:80
+    volumes:
+      - ./services/meetup-scrape/src:/app/src
+    command: npm run dev
+  redis:
+    image: redis
+    ports:
+      - 6379:6379

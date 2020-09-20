@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "outDir": "compiled",
+    "sourceMap": true,
+    "target": "es2018",
+    "typeRoots": ["node_modules/@types"]
+  },
+  "files": [
+    "src/index.ts",
+    "./src/TWO_CAPTCHA_API_KEY.ts",
+    "./src/loginUserOnMeetup.ts",
+    "./src/start.ts",
+    "./src/HttpError.ts"
+  ],
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}
