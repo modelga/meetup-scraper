@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  functional-test:
+    build:
+      context: ./services/functional-test
+    volumes:
+      - ./services/functional-test/test:/app/test
+    depends_on:
+      - gateway
+    environment:
+      - ACCOUNTS
+    scale: 0
+  gateway:
+    ports:
+      - 80

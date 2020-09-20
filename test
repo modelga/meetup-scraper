@@ -1,0 +1,19 @@
+#!/bin/sh
+# UNIQ_ID=`cat  /dev/urandom | head -c 6 | base64`
+UNIQ_ID="test"
+FILES="-f docker-compose.yml -f docker-compose.test.yml"
+OPTS="-p gabi_$UNIQ_ID $FILES" 
+docker-compose $OPTS up -d
+sleep 5
+# docker-compose $OPTS build functional-test
+docker-compose $OPTS up --exit-code-from functional-test  --scale functional-test=1  functional-test 
+status_code=$?
+
+# docker-compose $OPTS down --remove-orphans
+if [[ $status_code  -eq 0  ]] 
+then
+  echo "Tests passed!"c
+else
+  echo "Tests failed!"
+  exit 1
+fi

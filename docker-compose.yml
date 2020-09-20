@@ -14,5 +14,7 @@ services:
   gateway:
     build:
       context: ./services/gateway
+    ports:
+      - 3000:80
   redis:
     image: redis
