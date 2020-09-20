@@ -5,9 +5,6 @@ services:
     volumes:
       - ./services/gateway/src:/app/src
     command: npm run dev
-    depends_on:
-      - meetup-login
-      - meetup-scrape
   meetup-login:
     ports:
       - 3001:80
@@ -20,8 +17,6 @@ services:
     volumes:
       - ./services/meetup-scrape/src:/app/src
     command: npm run dev
-    depends_on:
-      - redis
   redis:
     image: redis
     ports:
