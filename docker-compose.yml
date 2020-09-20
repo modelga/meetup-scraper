@@ -13,6 +13,9 @@ services:
   meetup-scrape:
     build:
       context: ./services/meetup-scrape
+  avatar-storage:
+    build:
+      context: ./services/avatar-storage
   gateway:
     build:
       context: ./services/gateway

@@ -17,6 +17,15 @@ services:
     volumes:
       - ./services/meetup-scrape/src:/app/src
     command: npm run dev
+  avatar-storage:
+    volumes:
+      - ./services/avatar-storage/src:/app/src
+      - ./scrapes:/scrapes/
+    command: npm run dev
+    ports:
+      - 3003:80
+    environment:
+      - STORE_PATH=/scrapes
   redis:
     image: redis
     ports:
