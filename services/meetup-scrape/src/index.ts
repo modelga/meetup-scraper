@@ -11,7 +11,7 @@ const config: ConfigType = {
 
 start(config)
   .then(() => {
-    console.log(`Meetup-scraper app is working at ${config.PORT}`);
+    console.log(`Meetup-scraper app is working at port=${config.PORT}`);
   })
   .catch((err) => {
     console.log("Critical error");

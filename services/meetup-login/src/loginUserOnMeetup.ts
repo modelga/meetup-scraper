@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import { CaptchaSolver } from "./solveCaptcha";
+import HttpError from "./HttpError";
 
 function isLoginFormDisabled(page: puppeteer.Page): Promise<boolean> {
   return page.evaluate(() => {
@@ -10,6 +11,9 @@ function isLoginFormDisabled(page: puppeteer.Page): Promise<boolean> {
       return true;
     }
   });
+}
+function isErrorDisplayed(page: puppeteer.Page) {
+  return page.evaluate(() => !!document.querySelector("div.error"));
 }
 
 async function solveCaptcha(page: puppeteer.Page, captchaSolver: CaptchaSolver) {
@@ -26,7 +30,7 @@ async function solveCaptcha(page: puppeteer.Page, captchaSolver: CaptchaSolver) 
     console.log("Captcha solved");
   } catch (e) {
     console.error(e);
-    throw new Error(e);
+    throw new HttpError(502, "Bad Gateway: Upstream server not responding");
   }
 }
 
@@ -36,17 +40,11 @@ export function LoginUserOnMeetup(browser: puppeteer.Browser, captchaSolver: Cap
     const context = await browser.createIncognitoBrowserContext();
     let cookies;
     try {
-      const page = await context.newPage();
-      const ua = await browser.userAgent();
-      await page.setUserAgent(ua.replace("Headless", ""));
-      await page.goto(url);
-      console.log("Going to login page");
+      const page = await navigateToMainPage(context, browser, url);
 
-      await page.click("a[href*=login]");
-      await page.waitForSelector("#email");
-      await page.waitForSelector("#loginFormSubmit");
-      await page.type("#email", email);
-      await page.type("#password", password);
+      console.log("Navigating to login page");
+
+      await fillDataInputs(page, email, password);
 
       if (await isLoginFormDisabled(page)) {
         await solveCaptcha(page, captchaSolver);
@@ -59,16 +57,39 @@ export function LoginUserOnMeetup(browser: puppeteer.Browser, captchaSolver: Cap
         cookies = await page.cookies();
         return cookies;
       } catch (e) {
-        console.log(e);
-        throw new Error("Unable to login");
+        if (await isErrorDisplayed(page)) {
+          throw new HttpError(401, "Bad or missing login data");
+        } else {
+          console.log(e);
+          throw new HttpError(500, "Internal Server Error");
+        }
       } finally {
         await page.close();
-        await context.close();
       }
-    } catch (err) {
-      console.error(err);
+    } finally {
       await context.close();
-      throw err;
     }
   };
+}
+
+async function fillDataInputs(page: puppeteer.Page, email: string, password: string) {
+  await page.click("a[href*=login]");
+  await page.waitForSelector("#email");
+  await page.waitForSelector("#loginFormSubmit");
+  await page.type("#email", email);
+  await page.type("#password", password);
+}
+
+async function navigateToMainPage(context: puppeteer.BrowserContext, browser: puppeteer.Browser, url: string) {
+  try {
+    const page = await context.newPage();
+    const ua = await browser.userAgent();
+    await page.setUserAgent(ua.replace("Headless", ""));
+    await page.goto(url);
+    await page.waitForSelector("a[href*=login]");
+    return page;
+  } catch (err) {
+    console.error(err);
+    throw new HttpError(503, "Service unavailable");
+  }
 }
