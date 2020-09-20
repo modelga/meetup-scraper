@@ -1,3 +1,5 @@
+import HttpError from "../HttpError";
+
 export type UserType = {
   meetup_user_id: number;
   email: string;
@@ -22,4 +24,10 @@ export type AvatarType = {
   name: string;
   type: string;
 };
-export type ScrapeType = UserType | GroupType[] | EventType[] | AvatarType;
+
+export type ScrapedData = {
+  user: UserType | HttpError;
+  events: EventType[] | HttpError;
+  groups: GroupType[] | HttpError;
+  avatar: AvatarType | HttpError;
+};

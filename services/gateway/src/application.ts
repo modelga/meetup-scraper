@@ -33,7 +33,8 @@ export function start({ PORT }: ConfigType) {
         console.log(username, password);
         throw new HttpError(400, "Bad Request: inusufficient login data");
       }
-      const { avatar, ...data } = await scrape(username, password);
+      const { errors, ...data } = await scrape(username, password);
+      // errors.filter()
       res.json({ status: "ok", ...data });
     } catch (e) {
       next(e);

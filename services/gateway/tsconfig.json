@@ -15,7 +15,10 @@
     "./src/TWO_CAPTCHA_API_KEY.ts",
     "./src/loginUserOnMeetup.ts",
     "./src/start.ts",
-    "./src/HttpError.ts"
+    "./src/HttpError.ts",
+    "./src/isAxiosError.ts",
+    "./src/scrape/ScrapeResource.ts",
+    "./src/scrape/login.ts"
   ],
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]

@@ -24,6 +24,7 @@ export async function avatar(config: ConfigType, page: Page): Promise<AvatarType
   await nav;
   return {
     data: (await vs.buffer()).toString("base64"),
+    name: avatarUrl.split("/").pop(),
     type: vs.headers()["content-type"],
   };
 }
