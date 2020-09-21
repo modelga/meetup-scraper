@@ -2,20 +2,6 @@ import { Page } from "puppeteer";
 import { ConfigType } from "../application";
 import { EventType } from "../types";
 
-async function scrollDown(page: Page) {
-  await page.evaluate(() => {
-    const body = document.body;
-    const html = document.documentElement;
-    const height = Math.max(
-      body.scrollHeight,
-      body.offsetHeight,
-      html.clientHeight,
-      html.scrollHeight,
-      html.offsetHeight
-    );
-    window.scrollTo(0, height);
-  });
-}
 function normalizeType(
   e: Omit<EventType, "start_date"> & {
     start_date: string;
