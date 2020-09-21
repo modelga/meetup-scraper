@@ -10,7 +10,7 @@ docker-compose $OPTS up --exit-code-from functional-test  --scale functional-tes
 status_code=$?
 
 docker-compose $OPTS down --remove-orphans
-if [[ $status_code  -eq 0  ]] 
+if [[ $status_code -eq 0 ]] 
 then
   echo "Tests passed!"
 else

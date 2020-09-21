@@ -4,6 +4,7 @@ describe("gateway basic error checks", () => {
   test("should respond with status=404 on GET /scrape", async () => {
     try {
       await axios.get("http://gateway/scrape");
+      fail(new Error("Shoulnd't get data from non-implemented method"));
     } catch (err) {
       const e = err as AxiosError;
       expect(e.response.status).toBe(404);
@@ -13,6 +14,7 @@ describe("gateway basic error checks", () => {
   test("should respond with status=401 on POST /scrape with no login data", async () => {
     try {
       await axios.post("http://gateway/scrape");
+      fail(new Error("Shoulnd't pass invalid for data"));
     } catch (err) {
       const e = err as AxiosError;
       expect(e.response.status).toBe(401);
