@@ -21,8 +21,6 @@ services:
   gateway:
     build:
       context: ./services/gateway
-    ports:
-      - 3000:80
     depends_on:
       - meetup-login
       - avatar-storage
