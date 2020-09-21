@@ -2,26 +2,17 @@ version: "3.8"
 
 services:
   gateway:
-    volumes:
-      - ./services/gateway/src:/app/src
-    command: npm run dev
+    ports:
+      - 3000:80
   meetup-login:
     ports:
       - 3001:80
-    volumes:
-      - ./services/meetup-login/src:/app/src
-    command: npm run dev
   meetup-scrape:
     ports:
       - 3002:80
-    volumes:
-      - ./services/meetup-scrape/src:/app/src
-    command: npm run dev
   avatar-storage:
     volumes:
-      - ./services/avatar-storage/src:/app/src
       - ./scrapes:/scrapes/
-    command: npm run dev
     ports:
       - 3003:80
   redis:

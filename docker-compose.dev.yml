@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  gateway:
+    volumes:
+      - ./services/gateway/src:/app/src
+    command: npm run dev
+  meetup-login:
+    volumes:
+      - ./services/meetup-login/src:/app/src
+    command: npm run dev
+  meetup-scrape:
+    volumes:
+      - ./services/meetup-scrape/src:/app/src
+    command: npm run dev
+  avatar-storage:
+    volumes:
+      - ./services/avatar-storage/src:/app/src
+    command: npm run dev
+  redis:
+    image: redis
