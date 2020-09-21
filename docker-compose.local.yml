@@ -24,8 +24,6 @@ services:
     command: npm run dev
     ports:
       - 3003:80
-    environment:
-      - STORE_PATH=/scrapes
   redis:
     image: redis
     ports:

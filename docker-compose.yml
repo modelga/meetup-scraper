@@ -16,6 +16,8 @@ services:
   avatar-storage:
     build:
       context: ./services/avatar-storage
+    environment:
+      - STORE_PATH=/scrapes
   gateway:
     build:
       context: ./services/gateway
@@ -23,6 +25,7 @@ services:
       - 3000:80
     depends_on:
       - meetup-login
+      - avatar-storage
       - meetup-scrape
   redis:
     image: redis
