@@ -26,8 +26,4 @@ There is a case to run service in development mode, to get possibility to refres
 
 Command to run: `./dev`
 
-# Predefined secrets:
-
-https://onetimesecret.com/secret/b49di0cp09vfnwwsyfc8am619hsrwbi (Expiring on 28-09-2020)
-Password send through email
 
